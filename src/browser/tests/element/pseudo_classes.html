@@ -165,6 +165,21 @@
 }
 </script>
 
+<ul id="case_list"><li>1</li><li>2</li><li>3</li></ul>
+<script id="case_insensitive_names">
+{
+    // Pseudo-class names and the odd/even keywords are ASCII case-insensitive.
+    const texts = (sel) => Array.from(document.querySelectorAll(sel)).map((li) => li.textContent).join();
+    testing.expectEqual('1', texts('#case_list li:First-Child'));
+    testing.expectEqual('3', texts('#case_list li:LAST-CHILD'));
+    testing.expectEqual('2', texts('#case_list li:NTH-CHILD(2)'));
+    testing.expectEqual('1,3', texts('#case_list li:nth-child(ODD)'));
+    testing.expectEqual('2', texts('#case_list li:Nth-Of-Type(Even)'));
+    testing.expectEqual('1,3', texts('#case_list li:NOT(:nth-child(2))'));
+    testing.expectEqual(true, document.querySelector('#case_list li').matches(':Is(li)'));
+}
+</script>
+
 <ul id="nth_of_list"><li>1</li><li class="y">2</li><li>3</li><li class="y">4</li><li class="y">5</li></ul>
 <script id="nth_child_of">
 {
