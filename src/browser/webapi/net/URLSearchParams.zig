@@ -75,10 +75,8 @@ pub fn init(opts_: ?InitOpts, exec: *const Execution) !*URLSearchParams {
                     // normalizer is null, so local_arena won't be used
                     break :blk try KeyValueList.fromJsObject(arena.allocator(), js_val.toObject(), null, exec.local_arena);
                 }
-                if (js_val.isString()) |js_str| {
-                    break :blk try paramsFromString(arena.allocator(), try js_str.toSliceWithAlloc(arena.allocator()), exec.local_arena);
-                }
-                return error.InvalidArgument;
+                const string = try js_val.toString();
+                break :blk try paramsFromString(arena.allocator(), try string.toSliceWithAlloc(arena.allocator()), exec.local_arena);
             },
         }
     };

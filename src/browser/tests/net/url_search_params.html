@@ -738,3 +738,14 @@
   testing.expectEqual('B'.repeat(2000), url.searchParams.get('a'));
 }
 </script>
+
+<script id=scalarInputs>
+{
+  for (const [input, expected] of [[42, '42='], [true, 'true='], [false, 'false='], [0, '0='], [12n, '12=']]) {
+    testing.expectEqual(expected, new URLSearchParams(input).toString());
+  }
+  testing.expectEqual('', new URLSearchParams(null).toString());
+  testing.expectEqual('', new URLSearchParams(undefined).toString());
+  testing.expectError('TypeError', () => new URLSearchParams(Symbol('query')));
+}
+</script>
