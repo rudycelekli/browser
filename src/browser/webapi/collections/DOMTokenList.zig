@@ -330,7 +330,8 @@ fn validateToken(token: []const u8) !void {
     if (token.len == 0) {
         return error.SyntaxError;
     }
-    if (std.mem.findAny(u8, token, &std.ascii.whitespace) != null) {
+    // ASCII whitespace per Infra, which (unlike std.ascii.whitespace) has no VT.
+    if (std.mem.findAny(u8, token, WHITESPACE) != null) {
         return error.InvalidCharacterError;
     }
 }
