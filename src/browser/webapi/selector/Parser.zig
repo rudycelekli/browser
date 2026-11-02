@@ -516,11 +516,17 @@ fn pseudoClass(self: *Parser, arena: Allocator) !Selector.PseudoClass {
 
     self.input = self.input[1..];
 
-    const name = pseudoName(self.input);
-    if (name.len == 0) {
+    const raw_name = pseudoName(self.input);
+    if (raw_name.len == 0) {
         return error.InvalidPseudoClass;
     }
-    self.input = self.input[name.len..];
+    self.input = self.input[raw_name.len..];
+
+    // Pseudo-class names are ASCII case-insensitive (":First-Child" is
+    // ":first-child"). None we know is longer than the buffer, so a longer
+    // name can stay as written: it is unknown either way.
+    var lower_buf: [32]u8 = undefined;
+    const name = if (raw_name.len <= lower_buf.len) std.ascii.lowerString(&lower_buf, raw_name) else raw_name;
 
     const next = self.peek();
 
@@ -821,13 +827,13 @@ fn parseNthPattern(self: *Parser) !Selector.NthPattern {
 
     const start = self.input;
 
-    // Check for special keywords
-    if (std.mem.startsWith(u8, start, "odd")) {
+    // Check for special keywords, which are ASCII case-insensitive
+    if (std.ascii.startsWithIgnoreCase(start, "odd")) {
         self.input = start[3..];
         return .{ .a = 2, .b = 1 };
     }
 
-    if (std.mem.startsWith(u8, start, "even")) {
+    if (std.ascii.startsWithIgnoreCase(start, "even")) {
         self.input = start[4..];
         return .{ .a = 2, .b = 0 };
     }
